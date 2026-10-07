@@ -1,6 +1,6 @@
 # Lightyear port to the KyrioFox Bevy 0.20 development fork
 
-This branch pins every Bevy crate used directly by the Lightyear workspace to KyrioFox Bevy commit `35095cc77cc13ac0cf4774a7dc3dbda2cd6e092d`. The fork reports package version `0.20.0-dev` and Rust MSRV `1.97.1`; Lightyear's workspace MSRV is raised accordingly. Keep the git revision identical for every `bevy_*` workspace dependency, including the facade crate.
+This branch pins every Bevy crate used directly by the Lightyear workspace to KyrioFox Bevy commit `6fb711bbf91daa2f63fff3a15871a2cc256f80cb`. The fork reports package version `0.20.0-dev` and Rust MSRV `1.97.1`; Lightyear's workspace MSRV is raised accordingly. Keep the git revision identical for every `bevy_*` workspace dependency, including the facade crate.
 
 ## Ported APIs
 
