@@ -7,6 +7,7 @@
   - [Building the client and server ](./tutorial/build_client_server.md)
   - [Adding basic systems](./tutorial/basic_systems.md)
   - [Adding advances systems (prediction/interpolation)](./tutorial/advanced_systems.md)
+  - [Building a rollback-friendly fighter](./tutorial/fighter_game.md)
 
 - [Examples](./examples/title.md)
 
