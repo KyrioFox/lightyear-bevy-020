@@ -5,8 +5,11 @@ use bevy_ecs::archetype::{Archetype, ArchetypeGeneration, ArchetypeId};
 use bevy_ecs::change_detection::Tick;
 use bevy_ecs::component::{ComponentId, StorageType};
 use bevy_ecs::prelude::World;
-use bevy_ecs::query::{FilteredAccess, FilteredAccessSet};
-use bevy_ecs::system::{ReadOnlySystemParam, SystemMeta, SystemParam, SystemParamValidationError};
+use bevy_ecs::query::FilteredAccess;
+use bevy_ecs::system::{
+    ReadOnlySystemParam, SystemAccess, SystemMeta, SystemParam, SystemParamAccessConflict,
+    SystemParamValidationError,
+};
 use bevy_ecs::world::unsafe_world_cell::UnsafeWorldCell;
 use lightyear_prediction::prelude::PredictionRegistry;
 use lightyear_prediction::registry::PopUntilTickAndHashFn;
@@ -144,41 +147,31 @@ unsafe impl<const HISTORY: bool> SystemParam for ChecksumWorld<'_, '_, HISTORY> 
 
     fn init_access(
         state: &Self::State,
-        system_meta: &mut SystemMeta,
-        component_access_set: &mut FilteredAccessSet,
-        world: &mut World,
-    ) {
+        _system_meta: &mut SystemMeta,
+        system_access: &mut SystemAccess,
+    ) -> Result<(), SystemParamAccessConflict> {
         let mut filtered_access = FilteredAccess::default();
         filtered_access.add_read(state.marker_id);
-        // Exclude entities with DisableRollback from the checksum calculation since they won't have a PredictionHistory?
+        // Keep this filter aligned with the existing HISTORY query behavior.
         if HISTORY {
             filtered_access.and_without(state.disable_rollback_id);
         }
-        let combined_access = component_access_set.combined_access();
-        state.hash_fns.iter().for_each(|(component_id, (_, pop_fn))| {
-            if pop_fn.is_some() {
-                // the component is a PredictionHistory
-                // TODO: for non-full components, just fetch the component value directly
-                // We need write access because we will call `pop_until_tick` on the history component
-                filtered_access.add_write(*component_id);
-                assert!(
-                    !combined_access.has_read(*component_id),
-                    "replicated component `{}` in system `{}` shouldn't be in conflict with other system parameters",
-                    world.components().get_name(*component_id).unwrap(),
-                    system_meta.name(),
-                );
-            } else {
-                filtered_access.add_read(*component_id);
-                assert!(
-                    !combined_access.has_write(*component_id),
-                    "replicated component `{}` in system `{}` shouldn't be in conflict with other system parameters",
-                    world.components().get_name(*component_id).unwrap(),
-                    system_meta.name(),
-                );
-            }
-        });
-        // SAFETY: used only to extend access.
-        component_access_set.add(filtered_access);
+        state
+            .hash_fns
+            .iter()
+            .for_each(|(component_id, (_, pop_fn))| {
+                if pop_fn.is_some() {
+                    // the component is a PredictionHistory
+                    // TODO: for non-full components, just fetch the component value directly
+                    // We need write access because we will call `pop_until_tick` on the history component
+                    filtered_access.add_write(*component_id);
+                } else {
+                    filtered_access.add_read(*component_id);
+                }
+            });
+        system_access
+            .try_extend_single(filtered_access)
+            .map_err(|access| SystemParamAccessConflict::new::<Self>(access))
     }
 
     unsafe fn get_param<'world, 'state>(

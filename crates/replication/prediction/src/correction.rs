@@ -90,8 +90,11 @@ use bevy_ecs::{
     change_detection::Tick as ChangeTick,
     component::{ComponentId, Mutable},
     prelude::*,
-    query::{FilteredAccess, FilteredAccessSet},
-    system::{SystemMeta, SystemParam, SystemParamValidationError},
+    query::FilteredAccess,
+    system::{
+        SystemAccess, SystemMeta, SystemParam, SystemParamAccessConflict,
+        SystemParamValidationError,
+    },
     world::unsafe_world_cell::UnsafeWorldCell,
 };
 use bevy_reflect::Reflect;
@@ -264,24 +267,27 @@ impl<'w> CorrectionWorld<'w> {
 }
 
 unsafe impl SystemParam for CorrectionWorld<'_> {
-    type State = ();
+    type State = FilteredAccess;
     type Item<'world, 'state> = CorrectionWorld<'world>;
 
-    fn init_state(_world: &mut World) -> Self::State {}
-
-    fn init_access(
-        _state: &Self::State,
-        _system_meta: &mut SystemMeta,
-        component_access_set: &mut FilteredAccessSet,
-        world: &mut World,
-    ) {
-        let mut filtered_access = FilteredAccess::default();
+    fn init_state(world: &mut World) -> Self::State {
+        let mut access = FilteredAccess::default();
         if let Some(registry) = world.get_resource::<PredictionRegistry>() {
             for correction in registry.post_rollback_corrections() {
-                correction.add_correction_access(&mut filtered_access);
+                correction.add_correction_access(&mut access);
             }
         }
-        component_access_set.add(filtered_access);
+        access
+    }
+
+    fn init_access(
+        state: &Self::State,
+        _system_meta: &mut SystemMeta,
+        system_access: &mut SystemAccess,
+    ) -> Result<(), SystemParamAccessConflict> {
+        system_access
+            .try_extend_single(state.clone())
+            .map_err(|access| SystemParamAccessConflict::new::<Self>(access))
     }
 
     unsafe fn get_param<'world, 'state>(

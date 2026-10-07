@@ -5,8 +5,11 @@ use bevy_ecs::{
     change_detection::Tick as ChangeTick,
     component::{ComponentId, Components},
     prelude::*,
-    query::{FilteredAccess, FilteredAccessSet},
-    system::{SystemMeta, SystemParam, SystemParamValidationError},
+    query::FilteredAccess,
+    system::{
+        SystemAccess, SystemMeta, SystemParam, SystemParamAccessConflict,
+        SystemParamValidationError,
+    },
     world::{FromWorld, unsafe_world_cell::UnsafeWorldCell},
 };
 use bevy_platform::collections::HashMap;
@@ -30,6 +33,7 @@ pub struct FrameInterpolatedArchetypes {
     policies: Vec<CachedFrameInterpolationPolicy>,
     policy_ids: HashMap<InterpolationArchetypeKey, usize, NoOpHash>,
     resolution_scratch: RuleResolutionScratch,
+    component_access: FilteredAccess,
 }
 
 /// System param exposing cached frame interpolation archetypes and a low-level world cell.
@@ -71,26 +75,27 @@ unsafe impl SystemParam for FrameInterpolationWorld<'_, '_> {
     type Item<'world, 'state> = FrameInterpolationWorld<'world, 'state>;
 
     fn init_state(world: &mut World) -> Self::State {
-        FrameInterpolatedArchetypes::from_world(world)
+        let mut state = FrameInterpolatedArchetypes::from_world(world);
+        let mut component_access = FilteredAccess::default();
+        component_access.add_read(state.frame_interpolate_component_id);
+        component_access.add_read(state.skip_frame_interpolation_component_id);
+        if let Some(registry) = world.get_resource::<InterpolationRegistry>() {
+            for component_id in registry.frame_component_write_ids() {
+                component_access.add_write(component_id);
+            }
+        }
+        state.component_access = component_access;
+        state
     }
 
     fn init_access(
         state: &Self::State,
         _system_meta: &mut SystemMeta,
-        component_access_set: &mut FilteredAccessSet,
-        world: &mut World,
-    ) {
-        let mut filtered_access = FilteredAccess::default();
-        filtered_access.add_read(state.frame_interpolate_component_id);
-        filtered_access.add_read(state.skip_frame_interpolation_component_id);
-
-        if let Some(registry) = world.get_resource::<InterpolationRegistry>() {
-            for component_id in registry.frame_component_write_ids() {
-                filtered_access.add_write(component_id);
-            }
-        }
-
-        component_access_set.add(filtered_access);
+        system_access: &mut SystemAccess,
+    ) -> Result<(), SystemParamAccessConflict> {
+        system_access
+            .try_extend_single(state.component_access.clone())
+            .map_err(|access| SystemParamAccessConflict::new::<Self>(access))
     }
 
     unsafe fn get_param<'world, 'state>(
@@ -113,6 +118,7 @@ impl FromWorld for FrameInterpolatedArchetypes {
             policies: Vec::new(),
             policy_ids: HashMap::default(),
             resolution_scratch: RuleResolutionScratch::default(),
+            component_access: FilteredAccess::default(),
         }
     }
 }

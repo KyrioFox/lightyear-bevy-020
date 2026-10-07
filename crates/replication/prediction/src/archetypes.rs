@@ -13,9 +13,12 @@ use bevy_ecs::{
     component::{ComponentId, Components, StorageType},
     entity_disabling::DefaultQueryFilters,
     prelude::ResMut,
-    query::{FilteredAccess, FilteredAccessSet},
+    query::FilteredAccess,
     resource::Resource,
-    system::{SystemMeta, SystemParam, SystemParamValidationError},
+    system::{
+        SystemAccess, SystemMeta, SystemParam, SystemParamAccessConflict,
+        SystemParamValidationError,
+    },
     world::{FromWorld, World, unsafe_world_cell::UnsafeWorldCell},
 };
 use core::marker::PhantomData;
@@ -96,30 +99,19 @@ impl<const MODE: u8> PredictionWorld<'_, '_, MODE> {
 }
 
 unsafe impl<const MODE: u8> SystemParam for PredictionWorld<'_, '_, MODE> {
-    type State = <ResMut<'static, PredictedArchetypes> as SystemParam>::State;
+    type State = (
+        <ResMut<'static, PredictedArchetypes> as SystemParam>::State,
+        FilteredAccess,
+    );
     type Item<'world, 'state> = PredictionWorld<'world, 'state, MODE>;
 
     fn init_state(world: &mut World) -> Self::State {
         world.init_resource::<PredictedArchetypes>();
-        <ResMut<'static, PredictedArchetypes> as SystemParam>::init_state(world)
-    }
-
-    fn init_access(
-        state: &Self::State,
-        system_meta: &mut SystemMeta,
-        component_access_set: &mut FilteredAccessSet,
-        world: &mut World,
-    ) {
-        <ResMut<'static, PredictedArchetypes> as SystemParam>::init_access(
-            state,
-            system_meta,
-            component_access_set,
-            world,
-        );
-
+        let cache_state = <ResMut<'static, PredictedArchetypes> as SystemParam>::init_state(world);
+        let cache = world.resource::<PredictedArchetypes>();
         let mut access = FilteredAccess::default();
 
-        for component_id in &world.resource::<PredictedArchetypes>().filter_component_ids {
+        for component_id in &cache.filter_component_ids {
             access.add_read(*component_id);
         }
 
@@ -182,7 +174,22 @@ unsafe impl<const MODE: u8> SystemParam for PredictionWorld<'_, '_, MODE> {
             _ => unreachable!("unknown prediction world access mode"),
         }
 
-        component_access_set.add(access);
+        (cache_state, access)
+    }
+
+    fn init_access(
+        state: &Self::State,
+        system_meta: &mut SystemMeta,
+        system_access: &mut SystemAccess,
+    ) -> Result<(), SystemParamAccessConflict> {
+        <ResMut<'static, PredictedArchetypes> as SystemParam>::init_access(
+            &state.0,
+            system_meta,
+            system_access,
+        )?;
+        system_access
+            .try_extend_single(state.1.clone())
+            .map_err(|access| SystemParamAccessConflict::new::<Self>(access))
     }
 
     unsafe fn get_param<'world, 'state>(
@@ -195,7 +202,7 @@ unsafe impl<const MODE: u8> SystemParam for PredictionWorld<'_, '_, MODE> {
         // the caller guarantees that this is the same World used by `init_state`.
         let cache = unsafe {
             <ResMut<'static, PredictedArchetypes> as SystemParam>::get_param(
-                state,
+                &mut state.0,
                 system_meta,
                 world,
                 change_tick,

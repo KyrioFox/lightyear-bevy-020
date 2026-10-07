@@ -6,8 +6,10 @@ use bevy_app::{App, Plugin, PostUpdate, PreUpdate};
 use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::change_detection::Tick as ChangeTick;
 use bevy_ecs::prelude::*;
-use bevy_ecs::query::FilteredAccessSet;
-use bevy_ecs::system::{ReadOnlySystemParam, SystemMeta, SystemParam, SystemParamValidationError};
+use bevy_ecs::system::{
+    ReadOnlySystemParam, SystemAccess, SystemMeta, SystemParam, SystemParamAccessConflict,
+    SystemParamValidationError,
+};
 use bevy_ecs::world::unsafe_world_cell::UnsafeWorldCell;
 use bevy_reflect::Reflect;
 use bevy_time::{Time, Virtual};
@@ -131,15 +133,13 @@ unsafe impl SystemParam for SyncedInterpolationTimeline<'_, '_> {
     fn init_access(
         state: &Self::State,
         system_meta: &mut SystemMeta,
-        component_access_set: &mut FilteredAccessSet,
-        world: &mut World,
-    ) {
+        system_access: &mut SystemAccess,
+    ) -> Result<(), SystemParamAccessConflict> {
         <Res<'static, InterpolationTimeline> as SystemParam>::init_access(
             state,
             system_meta,
-            component_access_set,
-            world,
-        );
+            system_access,
+        )
     }
 
     #[inline]

@@ -332,14 +332,13 @@ pub(crate) fn apply_component_removal_predicted<C: Component>(
 /// materialize that confirmed value as the live component.
 pub(crate) fn add_prediction_history<C: Component + Clone>(
     trigger: On<
-        Add,
-        (
+        Add<(
             C,
             Predicted,
             PreSpawned,
             DeterministicPredicted,
             CatchUpGated,
-        ),
+        )>,
     >,
     query: Query<
         (),

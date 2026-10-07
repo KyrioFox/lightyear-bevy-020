@@ -10,20 +10,22 @@ This branch pins every Bevy crate used directly by the Lightyear workspace to Ky
 - Bevy's `Query::iter_many_unique{,_mut}` now yields per-entity results. The Lightyear call sites use `.matched()` to keep the previous behavior of skipping unavailable entities.
 - The vendored Aeronet IO 0.22.0-rc.1 adapter and Bevy Replicon 0.44.1 adapter are pinned to the same Bevy 0.20-dev crate identities. Replicon's system parameter access and event trigger bounds are adapted to this fork.
 - Replicon's server state transitions use Bevy 0.20's `NextState::set_if_different` API.
+- Lightyear's custom prediction, interpolation, frame interpolation, correction, and deterministic checksum system parameters now implement the three-argument `SystemParam::init_access`. Component accesses that previously inspected the world from `init_access` are captured during `init_state`, matching Bevy's system initialization lifecycle.
+- Converted a remaining prediction observer to `On<Add<(...)>>`.
 
 ## Verified profile
 
-This native UDP and state-replication profile compiles against the fork:
+This native gameplay profile compiles against the fork:
 
 ```sh
-cargo check -p lightyear --no-default-features --features "std,client,server,udp,netcode,replication"
+cargo check -p lightyear --no-default-features --features "std,client,server,udp,netcode,replication,prediction,interpolation,input_native,deterministic"
 ```
 
-This includes Lightyear client/server, UDP via Aeronet, netcode transport, and replicated state via Bevy Replicon. It does not establish prediction/interpolation compatibility.
+This includes Lightyear client/server, UDP via Aeronet, netcode transport, replicated state via Bevy Replicon, prediction, snapshot and frame interpolation, deterministic rollback support, and native input.
 
-## Prediction boundary
+## Validation boundary
 
-Enabling `prediction` currently fails in Lightyear's custom interpolation `SystemParam` implementations. Bevy 0.20 changed `SystemParam::init_access` from four arguments (including `World`) to three, with a `SystemAccess` result. Several Lightyear parameters inspect runtime registries through the removed `World` argument, so this is a structural migration rather than a dependency-version issue. Keep prediction disabled for this port slice until those access declarations are moved into parameter state and validated against the fork.
+The profile above is a compile gate, not a runtime multiplayer validation. In particular, it does not verify live UDP handshakes, prediction rollback behavior, or game-specific replicated components.
 
 ## Vendored provenance
 
