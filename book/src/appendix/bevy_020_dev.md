@@ -8,19 +8,23 @@ This branch pins every Bevy crate used directly by the Lightyear workspace to Ky
 - Observer lifecycle patterns now use one event-pattern type, for example `On<Add<Connected>>` and `On<Remove<Linked>>`. All Lightyear crates and examples have been converted from the Bevy 0.19 two-parameter form.
 - The custom `SyncedLocalTimeline` system parameter now implements Bevy 0.20's `SystemParam::init_access` using `SystemAccess` and returns the access conflict result.
 - Bevy's `Query::iter_many_unique{,_mut}` now yields per-entity results. The Lightyear call sites use `.matched()` to keep the previous behavior of skipping unavailable entities.
+- The vendored Aeronet IO 0.22.0-rc.1 adapter and Bevy Replicon 0.44.1 adapter are pinned to the same Bevy 0.20-dev crate identities. Replicon's system parameter access and event trigger bounds are adapted to this fork.
+- Replicon's server state transitions use Bevy 0.20's `NextState::set_if_different` API.
 
 ## Verified profile
 
-This subset compiles with the fork:
+This native UDP and state-replication profile compiles against the fork:
 
 ```sh
-cargo check -p lightyear --no-default-features --features "std,client,server"
+cargo check -p lightyear --no-default-features --features "std,client,server,udp,netcode,replication"
 ```
 
-It includes the Lightyear client/server plugin surface, link and connection layers, message transport, synchronization, and the app facade dependencies. It does not enable an IO backend or replication.
+This includes Lightyear client/server, UDP via Aeronet, netcode transport, and replicated state via Bevy Replicon. It does not establish prediction/interpolation compatibility.
 
-## Remaining dependency boundary
+## Prediction boundary
 
-The current Lightyear dependency graph still contains Bevy 0.19 types through external crates. `aeronet_io 0.21.0`, used by `lightyear_udp`, and `bevy_replicon 0.44.3`, used by replication, resolve `bevy_ecs 0.19.1` / `bevy_app 0.19.1` from crates.io. These are distinct Rust crate identities from KyrioFox Bevy's git-pinned `bevy_ecs 0.20.0-dev` and cannot be mixed in the same ECS `App`.
+Enabling `prediction` currently fails in Lightyear's custom interpolation `SystemParam` implementations. Bevy 0.20 changed `SystemParam::init_access` from four arguments (including `World`) to three, with a `SystemAccess` result. Several Lightyear parameters inspect runtime registries through the removed `World` argument, so this is a structural migration rather than a dependency-version issue. Keep prediction disabled for this port slice until those access declarations are moved into parameter state and validated against the fork.
 
-Consequently the UDP/netcode profile currently fails to compile, and replication, prediction, and native input are not yet a usable game integration. Upgrade or fork those external adapters against the same Bevy revision before claiming full Lightyear compatibility. The command above is the intentionally narrow compile gate for this port slice, not the full workspace gate.
+## Vendored provenance
+
+`vendor/UPSTREAM.md` records the exact Aeronet and Replicon source commits and their licenses. They are local compatibility copies, not upstream releases; retain that provenance when updating them.

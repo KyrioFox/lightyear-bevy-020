@@ -1,0 +1,34 @@
+[package]
+name = "aeronet_io"
+version = "0.22.0-rc.1"
+edition.workspace = true
+rust-version.workspace = true
+description = "IO abstraction primitives for `aeronet`"
+repository = "https://github.com/aecsocket/aeronet"
+license = "MIT OR Apache-2.0"
+keywords = ["bevy", "gamedev", "network"]
+categories = ["game-development", "network-programming"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg=docsrs_aeronet"]
+targets = ["x86_64-unknown-linux-gnu", "wasm32-unknown-unknown"]
+
+[dependencies]
+bevy_app = { workspace = true, features = ["bevy_reflect"] }
+bevy_ecs = { workspace = true, features = ["bevy_reflect"] }
+bevy_platform = { workspace = true, features = ["alloc"] }
+bevy_reflect.workspace = true
+bytes.workspace = true
+derive_more = { version = "2.0.1", default-features = false, features = ["add", "add_assign", "deref", "display", "error"] }
+log = "0.4"
+
+[target.'cfg(not(all(target_has_atomic = "8", target_has_atomic = "16", target_has_atomic = "32", target_has_atomic = "64", target_has_atomic = "ptr")))'.dependencies]
+bytes = { workspace = true, features = ["extra-platforms"] }
+
+[features]
+default = ["std"]
+std = ["bevy_platform/std", "bytes/std", "log/std"]
+
+[lints]
+workspace = true

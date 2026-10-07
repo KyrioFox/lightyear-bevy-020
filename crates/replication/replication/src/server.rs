@@ -167,7 +167,7 @@ fn remove_client_visibility_with_sender_removed(
 
 /// Set replicon's `ServerState` to `Running` when the server starts.
 fn on_server_started(_trigger: On<Add<Started>>, mut next_state: ResMut<NextState<ServerState>>) {
-    NextState::set_if_neq(&mut next_state, ServerState::Running);
+    next_state.set_if_different(ServerState::Running);
 }
 
 /// Set replicon's `ServerState` to `Stopped` when the server stops or is despawned.
@@ -178,7 +178,7 @@ fn on_server_stopped(
     _trigger: On<Remove<Started>>,
     mut next_state: ResMut<NextState<ServerState>>,
 ) {
-    NextState::set_if_neq(&mut next_state, ServerState::Stopped);
+    next_state.set_if_different(ServerState::Stopped);
 }
 
 /// Receive packets from transports and populate `ServerMessages` (ack data from peers).
