@@ -6,7 +6,6 @@
 //! - how the component should be synchronized between the `Confirmed` entity and the `Predicted`/`Interpolated` entity
 use bevy::app::{App, Plugin};
 use bevy::ecs::entity::MapEntities;
-use bevy::math::Curve;
 use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
 

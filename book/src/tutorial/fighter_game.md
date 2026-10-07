@@ -4,7 +4,7 @@ This guide maps Lightyear's existing input and prediction APIs onto a native 1v1
 
 ## Pin the engine boundary first
 
-The current Lightyear `0.30` workspace targets Bevy `0.19` and Rust `1.95` (see the root `Cargo.toml` and README compatibility table). Keep the forked Bevy revision API-compatible with that Bevy release when consuming Lightyear as a dependency. If the fork changes public Bevy APIs or Cargo package identity, Lightyear and every Bevy-facing dependency must be built against the same fork revision; mixing upstream Bevy and a distinct fork in one ECS world is not supported. Record the exact Bevy revision and Lightyear revision together in the game workspace lockfile.
+Upstream Lightyear `0.30` targets Bevy `0.19` and Rust `1.95` (see the README compatibility table). This port branch pins its direct Bevy dependencies to KyrioFox Bevy `0.20.0-dev`; the verified client/server core profile and remaining adapter blockers are listed in the [port status](../appendix/bevy_020_dev.md). For a game crate, use the exact same Bevy revision as Lightyear for every Bevy-facing dependency. Mixing upstream Bevy and a distinct fork in one ECS world is not supported. Record the exact Bevy revision and Lightyear revision together in the game workspace lockfile.
 
 For an initial native build, use the ordinary client/server topology. It leaves match validation and hit resolution on the server. Consider deterministic peer simulation only after the entire combat simulation is deterministic across supported CPUs and the design accepts peers simulating the full match. Lightyear's `simple_box` example demonstrates both topologies; its P2P path deliberately runs the same fixed roster and simulation on every peer.
 

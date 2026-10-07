@@ -363,7 +363,7 @@ pub fn add_correction_systems<
 /// causes is measured from it. The system that computes corrections decides when
 /// a saved value is past saving; see [`crate::correction`]'s creation system.
 fn remove_correction_state_on_live_removed<C: Component, D: Send + Sync + 'static>(
-    trigger: On<Remove, C>,
+    trigger: On<Remove<C>>,
     mut commands: Commands,
 ) {
     commands
@@ -1055,11 +1055,8 @@ impl CorrectionPolicy {
 mod tests {
     use core::time::Duration;
 
+    use bevy_curve::{Curve, Ease, FunctionCurve, Interval};
     use bevy_ecs::system::RunSystemOnce;
-    use bevy_math::{
-        Curve,
-        curve::{Ease, FunctionCurve, Interval},
-    };
     use bevy_replicon::prelude::*;
     use bevy_state::app::StatesPlugin;
     use lightyear_interpolation::{

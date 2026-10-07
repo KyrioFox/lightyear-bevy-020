@@ -42,3 +42,4 @@
     - [Interest management](./concepts/advanced_replication/interest_management.md)
 
 - [Appendix](./appendix/title.md)
+  - [Lightyear port to the Bevy 0.20 development fork](./appendix/bevy_020_dev.md)

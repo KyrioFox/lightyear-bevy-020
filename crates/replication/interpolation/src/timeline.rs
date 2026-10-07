@@ -250,7 +250,7 @@ pub struct TimelinePlugin;
 impl TimelinePlugin {
     /// Reset the presentation timeline for a newly connected conventional client session.
     fn handle_connect(
-        trigger: On<Add, Connected>,
+        trigger: On<Add<Connected>>,
         clients: Query<(), (With<Client>, Without<P2P>)>,
         mut timeline: ResMut<InterpolationTimeline>,
     ) {
@@ -262,7 +262,7 @@ impl TimelinePlugin {
 
     /// Mark an in-process host client's presentation timeline ready without network sampling.
     fn handle_host_client(
-        trigger: On<Add, HostClient>,
+        trigger: On<Add<HostClient>>,
         clients: Query<(), (With<Client>, Without<P2P>)>,
         mut timeline: ResMut<InterpolationTimeline>,
     ) {
@@ -273,7 +273,7 @@ impl TimelinePlugin {
 
     /// Reset presentation synchronization when a conventional client disconnects.
     fn handle_disconnect(
-        trigger: On<Add, Disconnected>,
+        trigger: On<Add<Disconnected>>,
         clients: Query<(), (With<Client>, Without<P2P>)>,
         mut timeline: ResMut<InterpolationTimeline>,
     ) {
