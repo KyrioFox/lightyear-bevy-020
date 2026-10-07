@@ -199,7 +199,7 @@ stats_alloc = "0.1.10"
 # Bevy
 # Pinned to the current KyrioFox fork commit; update this SHA and all workspace Bevy crates together.
 # (the full app is used for examples)
-bevy = { git = "https://github.com/KyrioFox/bevy.git", rev = "5cd69c13575d37a5a36988339d86814b2a459815", version = "0.20.0-dev", default-features = false, features = [
+bevy = { git = "https://github.com/KyrioFox/bevy.git", rev = "35095cc77cc13ac0cf4774a7dc3dbda2cd6e092d", version = "0.20.0-dev", default-features = false, features = [
   "bevy_state",
   "bevy_log",
   "serialize",
@@ -211,27 +211,27 @@ bevy = { git = "https://github.com/KyrioFox/bevy.git", rev = "5cd69c13575d37a5a3
   "zstd_rust",
   "keyboard",
 ] }
-bevy_app = { git = "https://github.com/KyrioFox/bevy.git", rev = "5cd69c13575d37a5a36988339d86814b2a459815", version = "0.20.0-dev", default-features = false }
-bevy_derive = { git = "https://github.com/KyrioFox/bevy.git", rev = "5cd69c13575d37a5a36988339d86814b2a459815", version = "0.20.0-dev", default-features = false }
-bevy_log = { git = "https://github.com/KyrioFox/bevy.git", rev = "5cd69c13575d37a5a36988339d86814b2a459815", version = "0.20.0-dev", default-features = false }
-bevy_diagnostic = { git = "https://github.com/KyrioFox/bevy.git", rev = "5cd69c13575d37a5a36988339d86814b2a459815", version = "0.20.0-dev", default-features = false }
-bevy_color = { git = "https://github.com/KyrioFox/bevy.git", rev = "5cd69c13575d37a5a36988339d86814b2a459815", version = "0.20.0-dev", default-features = false }
-bevy_curve = { git = "https://github.com/KyrioFox/bevy.git", rev = "5cd69c13575d37a5a36988339d86814b2a459815", version = "0.20.0-dev", default-features = false }
-bevy_ecs = { git = "https://github.com/KyrioFox/bevy.git", rev = "5cd69c13575d37a5a36988339d86814b2a459815", version = "0.20.0-dev", default-features = false }
-bevy_input = { git = "https://github.com/KyrioFox/bevy.git", rev = "5cd69c13575d37a5a36988339d86814b2a459815", version = "0.20.0-dev", default-features = false }
-bevy_math = { git = "https://github.com/KyrioFox/bevy.git", rev = "5cd69c13575d37a5a36988339d86814b2a459815", version = "0.20.0-dev", default-features = false }
-bevy_platform = { git = "https://github.com/KyrioFox/bevy.git", rev = "5cd69c13575d37a5a36988339d86814b2a459815", version = "0.20.0-dev", default-features = false }
-bevy_ptr = { git = "https://github.com/KyrioFox/bevy.git", rev = "5cd69c13575d37a5a36988339d86814b2a459815", version = "0.20.0-dev", default-features = false }
-bevy_reflect = { git = "https://github.com/KyrioFox/bevy.git", rev = "5cd69c13575d37a5a36988339d86814b2a459815", version = "0.20.0-dev", default-features = false }
-bevy_state = { git = "https://github.com/KyrioFox/bevy.git", rev = "5cd69c13575d37a5a36988339d86814b2a459815", version = "0.20.0-dev", default-features = false }
-bevy_text = { git = "https://github.com/KyrioFox/bevy.git", rev = "5cd69c13575d37a5a36988339d86814b2a459815", version = "0.20.0-dev", default-features = false }
-bevy_time = { git = "https://github.com/KyrioFox/bevy.git", rev = "5cd69c13575d37a5a36988339d86814b2a459815", version = "0.20.0-dev", default-features = false }
-bevy_transform = { git = "https://github.com/KyrioFox/bevy.git", rev = "5cd69c13575d37a5a36988339d86814b2a459815", version = "0.20.0-dev", default-features = false }
-bevy_ui = { git = "https://github.com/KyrioFox/bevy.git", rev = "5cd69c13575d37a5a36988339d86814b2a459815", version = "0.20.0-dev", default-features = false }
-bevy_utils = { git = "https://github.com/KyrioFox/bevy.git", rev = "5cd69c13575d37a5a36988339d86814b2a459815", version = "0.20.0-dev", default-features = false, features = [
+bevy_app = { git = "https://github.com/KyrioFox/bevy.git", rev = "35095cc77cc13ac0cf4774a7dc3dbda2cd6e092d", version = "0.20.0-dev", default-features = false }
+bevy_derive = { git = "https://github.com/KyrioFox/bevy.git", rev = "35095cc77cc13ac0cf4774a7dc3dbda2cd6e092d", version = "0.20.0-dev", default-features = false }
+bevy_log = { git = "https://github.com/KyrioFox/bevy.git", rev = "35095cc77cc13ac0cf4774a7dc3dbda2cd6e092d", version = "0.20.0-dev", default-features = false }
+bevy_diagnostic = { git = "https://github.com/KyrioFox/bevy.git", rev = "35095cc77cc13ac0cf4774a7dc3dbda2cd6e092d", version = "0.20.0-dev", default-features = false }
+bevy_color = { git = "https://github.com/KyrioFox/bevy.git", rev = "35095cc77cc13ac0cf4774a7dc3dbda2cd6e092d", version = "0.20.0-dev", default-features = false }
+bevy_curve = { git = "https://github.com/KyrioFox/bevy.git", rev = "35095cc77cc13ac0cf4774a7dc3dbda2cd6e092d", version = "0.20.0-dev", default-features = false }
+bevy_ecs = { git = "https://github.com/KyrioFox/bevy.git", rev = "35095cc77cc13ac0cf4774a7dc3dbda2cd6e092d", version = "0.20.0-dev", default-features = false }
+bevy_input = { git = "https://github.com/KyrioFox/bevy.git", rev = "35095cc77cc13ac0cf4774a7dc3dbda2cd6e092d", version = "0.20.0-dev", default-features = false }
+bevy_math = { git = "https://github.com/KyrioFox/bevy.git", rev = "35095cc77cc13ac0cf4774a7dc3dbda2cd6e092d", version = "0.20.0-dev", default-features = false }
+bevy_platform = { git = "https://github.com/KyrioFox/bevy.git", rev = "35095cc77cc13ac0cf4774a7dc3dbda2cd6e092d", version = "0.20.0-dev", default-features = false }
+bevy_ptr = { git = "https://github.com/KyrioFox/bevy.git", rev = "35095cc77cc13ac0cf4774a7dc3dbda2cd6e092d", version = "0.20.0-dev", default-features = false }
+bevy_reflect = { git = "https://github.com/KyrioFox/bevy.git", rev = "35095cc77cc13ac0cf4774a7dc3dbda2cd6e092d", version = "0.20.0-dev", default-features = false }
+bevy_state = { git = "https://github.com/KyrioFox/bevy.git", rev = "35095cc77cc13ac0cf4774a7dc3dbda2cd6e092d", version = "0.20.0-dev", default-features = false }
+bevy_text = { git = "https://github.com/KyrioFox/bevy.git", rev = "35095cc77cc13ac0cf4774a7dc3dbda2cd6e092d", version = "0.20.0-dev", default-features = false }
+bevy_time = { git = "https://github.com/KyrioFox/bevy.git", rev = "35095cc77cc13ac0cf4774a7dc3dbda2cd6e092d", version = "0.20.0-dev", default-features = false }
+bevy_transform = { git = "https://github.com/KyrioFox/bevy.git", rev = "35095cc77cc13ac0cf4774a7dc3dbda2cd6e092d", version = "0.20.0-dev", default-features = false }
+bevy_ui = { git = "https://github.com/KyrioFox/bevy.git", rev = "35095cc77cc13ac0cf4774a7dc3dbda2cd6e092d", version = "0.20.0-dev", default-features = false }
+bevy_utils = { git = "https://github.com/KyrioFox/bevy.git", rev = "35095cc77cc13ac0cf4774a7dc3dbda2cd6e092d", version = "0.20.0-dev", default-features = false, features = [
   "debug",
 ] }
-bevy_winit = { git = "https://github.com/KyrioFox/bevy.git", rev = "5cd69c13575d37a5a36988339d86814b2a459815", version = "0.20.0-dev", default-features = false }
+bevy_winit = { git = "https://github.com/KyrioFox/bevy.git", rev = "35095cc77cc13ac0cf4774a7dc3dbda2cd6e092d", version = "0.20.0-dev", default-features = false }
 tracy-client = { version = "0.18" }
 
 # input
